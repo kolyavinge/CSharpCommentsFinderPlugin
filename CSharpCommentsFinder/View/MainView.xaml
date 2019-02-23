@@ -10,7 +10,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="200" Width="300" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
+            <ColumnDefinition MinWidth="200" />
         </Grid.ColumnDefinitions>
         <!-- список проектов -->
         <Grid Grid.Column="0">
@@ -24,13 +24,13 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <GridSplitter Grid.Column="1" ResizeDirection="Columns" VerticalAlignment="Stretch" Width="3" />
+        <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="3" />
         <!-- список найденных комментариев -->
         <Grid Grid.Column="2">
             <Button Content="Find comments" Command="{Binding FindCommentsCommand}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="23" />
-            <DataGrid Margin="0,23,0,0">
+            <DataGrid ItemsSource="{Binding CommentsViewModel}" AutoGenerateColumns="False" Margin="0,23,0,0">
                 <DataGrid.Columns>
-                    <DataGridTextColumn />
+                    <DataGridTextColumn Binding="{Binding Item.Text}" />
                     <DataGridTextColumn />
                 </DataGrid.Columns>
             </DataGrid>

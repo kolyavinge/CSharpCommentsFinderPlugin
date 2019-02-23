@@ -20,6 +20,7 @@ namespace CSharpCommentsFinder.ViewModel
 
         public MainViewModel(IProjectsCollection projects)
         {
+            CommentsViewModel = new ObservableCollection<CommentViewModel>();
             ProjectsViewModel = projects.Projects.Select(p => new ProjectViewModel(p)).ToList();
         }
 
