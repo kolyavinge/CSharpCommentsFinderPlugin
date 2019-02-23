@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
 
-namespace CSharpCommentsFinder.VsCommands
+namespace CSharpCommentsFinder.VsToolWindow
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -35,19 +35,20 @@ namespace CSharpCommentsFinder.VsCommands
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(FindCommentsCommandPackage.PackageGuidString)]
+    [ProvideToolWindow(typeof(ToolWindow))]
+    [Guid(ToolWindowPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class FindCommentsCommandPackage : AsyncPackage
+    public sealed class ToolWindowPackage : AsyncPackage
     {
         /// <summary>
-        /// FindCommentsCommandPackage GUID string.
+        /// ToolWindowPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "af1a4f0d-b682-43eb-ad18-9abc931976d4";
+        public const string PackageGuidString = "43102f84-86d3-47ff-bb0d-82fc2f5b667d";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FindCommentsCommandPackage"/> class.
+        /// Initializes a new instance of the <see cref="ToolWindowPackage"/> class.
         /// </summary>
-        public FindCommentsCommandPackage()
+        public ToolWindowPackage()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
@@ -69,7 +70,7 @@ namespace CSharpCommentsFinder.VsCommands
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            await FindCommentsCommand.InitializeAsync(this);
+            await ToolWindowCommand.InitializeAsync(this);
         }
 
         #endregion

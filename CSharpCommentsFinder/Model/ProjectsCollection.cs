@@ -1,20 +1,16 @@
-﻿using System;
+﻿using EnvDTE;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EnvDTE;
-using EnvDTE80;
 
 namespace CSharpCommentsFinder.Model
 {
     public class ProjectsCollection : IProjectsCollection
     {
-        private readonly DTE2 _dte;
+        private readonly DTE _dte;
 
-        public ProjectsCollection(DTE2 dte)
+        public ProjectsCollection(DTE dte)
         {
-            _dte = dte;
+            _dte = dte ?? throw new ArgumentNullException(nameof(dte));
         }
 
         public IEnumerable<IProject> Projects

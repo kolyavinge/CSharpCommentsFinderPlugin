@@ -7,12 +7,12 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
-namespace CSharpCommentsFinder.VsCommands
+namespace CSharpCommentsFinder.VsToolWindow
 {
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class FindCommentsCommand
+    internal sealed class ToolWindowCommand
     {
         /// <summary>
         /// Command ID.
@@ -22,7 +22,7 @@ namespace CSharpCommentsFinder.VsCommands
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("14dc6b16-577b-4cb5-a4fd-b38ee50d964e");
+        public static readonly Guid CommandSet = new Guid("0574017b-8515-432d-9f38-0c3675503f87");
 
         /// <summary>
         /// VS Package that provides this command, not null.
@@ -30,12 +30,12 @@ namespace CSharpCommentsFinder.VsCommands
         private readonly AsyncPackage package;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FindCommentsCommand"/> class.
+        /// Initializes a new instance of the <see cref="ToolWindowCommand"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
         /// <param name="commandService">Command service to add command to, not null.</param>
-        private FindCommentsCommand(AsyncPackage package, OleMenuCommandService commandService)
+        private ToolWindowCommand(AsyncPackage package, OleMenuCommandService commandService)
         {
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
@@ -48,7 +48,7 @@ namespace CSharpCommentsFinder.VsCommands
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
-        public static FindCommentsCommand Instance
+        public static ToolWindowCommand Instance
         {
             get;
             private set;
@@ -71,35 +71,34 @@ namespace CSharpCommentsFinder.VsCommands
         /// <param name="package">Owner package, not null.</param>
         public static async Task InitializeAsync(AsyncPackage package)
         {
-            // Switch to the main thread - the call to AddCommand in FindCommentsCommand's constructor requires
+            // Switch to the main thread - the call to AddCommand in ToolWindowCommand's constructor requires
             // the UI thread.
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
             OleMenuCommandService commandService = await package.GetServiceAsync((typeof(IMenuCommandService))) as OleMenuCommandService;
-            Instance = new FindCommentsCommand(package, commandService);
+            Instance = new ToolWindowCommand(package, commandService);
         }
 
         /// <summary>
-        /// This function is the callback used to execute the command when the menu item is clicked.
-        /// See the constructor to see how the menu item is associated with this function using
-        /// OleMenuCommandService service and MenuCommand class.
+        /// Shows the tool window when the menu item is clicked.
         /// </summary>
-        /// <param name="sender">Event sender.</param>
-        /// <param name="e">Event args.</param>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "FindCommentsCommand";
 
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.package,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+            // Get the instance number 0 of this tool window. This window is single instance so this instance
+            // is actually the only one.
+            // The last flag is set to true so that if the tool window does not exists it will be created.
+            ToolWindowPane window = this.package.FindToolWindow(typeof(ToolWindow), 0, true);
+            if ((null == window) || (null == window.Frame))
+            {
+                throw new NotSupportedException("Cannot create tool window");
+            }
+
+            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
     }
 }
