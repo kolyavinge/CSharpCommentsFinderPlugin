@@ -1,8 +1,7 @@
-// Scanner for C# code
-
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 
 namespace CSharpCommentsFinder.CSharpGrammar
 {
@@ -15,6 +14,12 @@ namespace CSharpCommentsFinder.CSharpGrammar
         public int line;    // token line (starting at 1)
         public string val;  // token value
         public Token next;  // ML 2005-03-11 Tokens are kept in linked list
+    }
+
+    public enum TokenKinds
+    {
+        LineComment = 1000,
+        MultilineComment = 1001,
     }
 
     //-----------------------------------------------------------------------------------
@@ -252,7 +257,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
 
         Buffer buffer; // scanner buffer
 
-        Token t;          // current token
+        Token token;          // current token
         int ch;           // current input character
         int pos;          // byte position of current character
         int charPos;      // position by unicode characters starting with 0
@@ -311,7 +316,6 @@ namespace CSharpCommentsFinder.CSharpGrammar
             start[94] = 199;
             start[35] = 171;
             start[Buffer.EOF] = -1;
-
         }
 
         public Scanner(string fileName)
@@ -390,6 +394,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
             NextCh();
             if (ch == '/')
             {
+                token.kind = (int)TokenKinds.LineComment;
                 NextCh();
                 for (; ; )
                 {
@@ -399,8 +404,9 @@ namespace CSharpCommentsFinder.CSharpGrammar
                         if (level == 0) { oldEols = line - line0; NextCh(); return true; }
                         NextCh();
                     }
-                    else if (ch == Buffer.EOF) return false;
-                    else NextCh();
+                    else if (ch == 13) NextCh();
+                    else if (ch == Buffer.EOF) return true;
+                    else AddCh();
                 }
             }
             else
@@ -416,6 +422,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
             NextCh();
             if (ch == '*')
             {
+                token.kind = (int)TokenKinds.MultilineComment;
                 NextCh();
                 for (; ; )
                 {
@@ -430,7 +437,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                         }
                     }
                     else if (ch == Buffer.EOF) return false;
-                    else NextCh();
+                    else AddCh();
                 }
             }
             else
@@ -442,132 +449,136 @@ namespace CSharpCommentsFinder.CSharpGrammar
 
         void CheckLiteral()
         {
-            switch (t.val)
+            switch (token.val)
             {
-                case "abstract": t.kind = 6; break;
-                case "as": t.kind = 7; break;
-                case "base": t.kind = 8; break;
-                case "bool": t.kind = 9; break;
-                case "break": t.kind = 10; break;
-                case "byte": t.kind = 11; break;
-                case "case": t.kind = 12; break;
-                case "catch": t.kind = 13; break;
-                case "char": t.kind = 14; break;
-                case "checked": t.kind = 15; break;
-                case "class": t.kind = 16; break;
-                case "const": t.kind = 17; break;
-                case "continue": t.kind = 18; break;
-                case "decimal": t.kind = 19; break;
-                case "default": t.kind = 20; break;
-                case "delegate": t.kind = 21; break;
-                case "do": t.kind = 22; break;
-                case "double": t.kind = 23; break;
-                case "else": t.kind = 24; break;
-                case "enum": t.kind = 25; break;
-                case "event": t.kind = 26; break;
-                case "explicit": t.kind = 27; break;
-                case "extern": t.kind = 28; break;
-                case "false": t.kind = 29; break;
-                case "finally": t.kind = 30; break;
-                case "fixed": t.kind = 31; break;
-                case "float": t.kind = 32; break;
-                case "for": t.kind = 33; break;
-                case "foreach": t.kind = 34; break;
-                case "goto": t.kind = 35; break;
-                case "if": t.kind = 36; break;
-                case "implicit": t.kind = 37; break;
-                case "in": t.kind = 38; break;
-                case "int": t.kind = 39; break;
-                case "interface": t.kind = 40; break;
-                case "internal": t.kind = 41; break;
-                case "is": t.kind = 42; break;
-                case "lock": t.kind = 43; break;
-                case "long": t.kind = 44; break;
-                case "namespace": t.kind = 45; break;
-                case "new": t.kind = 46; break;
-                case "null": t.kind = 47; break;
-                case "object": t.kind = 48; break;
-                case "operator": t.kind = 49; break;
-                case "out": t.kind = 50; break;
-                case "override": t.kind = 51; break;
-                case "params": t.kind = 52; break;
-                case "private": t.kind = 53; break;
-                case "protected": t.kind = 54; break;
-                case "public": t.kind = 55; break;
-                case "readonly": t.kind = 56; break;
-                case "ref": t.kind = 57; break;
-                case "return": t.kind = 58; break;
-                case "sbyte": t.kind = 59; break;
-                case "sealed": t.kind = 60; break;
-                case "short": t.kind = 61; break;
-                case "sizeof": t.kind = 62; break;
-                case "stackalloc": t.kind = 63; break;
-                case "static": t.kind = 64; break;
-                case "string": t.kind = 65; break;
-                case "struct": t.kind = 66; break;
-                case "switch": t.kind = 67; break;
-                case "this": t.kind = 68; break;
-                case "throw": t.kind = 69; break;
-                case "true": t.kind = 70; break;
-                case "try": t.kind = 71; break;
-                case "typeof": t.kind = 72; break;
-                case "uint": t.kind = 73; break;
-                case "ulong": t.kind = 74; break;
-                case "unchecked": t.kind = 75; break;
-                case "unsafe": t.kind = 76; break;
-                case "ushort": t.kind = 77; break;
-                case "using": t.kind = 78; break;
-                case "virtual": t.kind = 79; break;
-                case "void": t.kind = 80; break;
-                case "volatile": t.kind = 81; break;
-                case "while": t.kind = 82; break;
-                case "from": t.kind = 123; break;
-                case "where": t.kind = 124; break;
-                case "join": t.kind = 125; break;
-                case "on": t.kind = 126; break;
-                case "equals": t.kind = 127; break;
-                case "into": t.kind = 128; break;
-                case "let": t.kind = 129; break;
-                case "orderby": t.kind = 130; break;
-                case "ascending": t.kind = 131; break;
-                case "descending": t.kind = 132; break;
-                case "select": t.kind = 133; break;
-                case "group": t.kind = 134; break;
-                case "by": t.kind = 135; break;
+                case "abstract": token.kind = 6; break;
+                case "as": token.kind = 7; break;
+                case "base": token.kind = 8; break;
+                case "bool": token.kind = 9; break;
+                case "break": token.kind = 10; break;
+                case "byte": token.kind = 11; break;
+                case "case": token.kind = 12; break;
+                case "catch": token.kind = 13; break;
+                case "char": token.kind = 14; break;
+                case "checked": token.kind = 15; break;
+                case "class": token.kind = 16; break;
+                case "const": token.kind = 17; break;
+                case "continue": token.kind = 18; break;
+                case "decimal": token.kind = 19; break;
+                case "default": token.kind = 20; break;
+                case "delegate": token.kind = 21; break;
+                case "do": token.kind = 22; break;
+                case "double": token.kind = 23; break;
+                case "else": token.kind = 24; break;
+                case "enum": token.kind = 25; break;
+                case "event": token.kind = 26; break;
+                case "explicit": token.kind = 27; break;
+                case "extern": token.kind = 28; break;
+                case "false": token.kind = 29; break;
+                case "finally": token.kind = 30; break;
+                case "fixed": token.kind = 31; break;
+                case "float": token.kind = 32; break;
+                case "for": token.kind = 33; break;
+                case "foreach": token.kind = 34; break;
+                case "goto": token.kind = 35; break;
+                case "if": token.kind = 36; break;
+                case "implicit": token.kind = 37; break;
+                case "in": token.kind = 38; break;
+                case "int": token.kind = 39; break;
+                case "interface": token.kind = 40; break;
+                case "internal": token.kind = 41; break;
+                case "is": token.kind = 42; break;
+                case "lock": token.kind = 43; break;
+                case "long": token.kind = 44; break;
+                case "namespace": token.kind = 45; break;
+                case "new": token.kind = 46; break;
+                case "null": token.kind = 47; break;
+                case "object": token.kind = 48; break;
+                case "operator": token.kind = 49; break;
+                case "out": token.kind = 50; break;
+                case "override": token.kind = 51; break;
+                case "params": token.kind = 52; break;
+                case "private": token.kind = 53; break;
+                case "protected": token.kind = 54; break;
+                case "public": token.kind = 55; break;
+                case "readonly": token.kind = 56; break;
+                case "ref": token.kind = 57; break;
+                case "return": token.kind = 58; break;
+                case "sbyte": token.kind = 59; break;
+                case "sealed": token.kind = 60; break;
+                case "short": token.kind = 61; break;
+                case "sizeof": token.kind = 62; break;
+                case "stackalloc": token.kind = 63; break;
+                case "static": token.kind = 64; break;
+                case "string": token.kind = 65; break;
+                case "struct": token.kind = 66; break;
+                case "switch": token.kind = 67; break;
+                case "this": token.kind = 68; break;
+                case "throw": token.kind = 69; break;
+                case "true": token.kind = 70; break;
+                case "try": token.kind = 71; break;
+                case "typeof": token.kind = 72; break;
+                case "uint": token.kind = 73; break;
+                case "ulong": token.kind = 74; break;
+                case "unchecked": token.kind = 75; break;
+                case "unsafe": token.kind = 76; break;
+                case "ushort": token.kind = 77; break;
+                case "using": token.kind = 78; break;
+                case "virtual": token.kind = 79; break;
+                case "void": token.kind = 80; break;
+                case "volatile": token.kind = 81; break;
+                case "while": token.kind = 82; break;
+                case "from": token.kind = 123; break;
+                case "where": token.kind = 124; break;
+                case "join": token.kind = 125; break;
+                case "on": token.kind = 126; break;
+                case "equals": token.kind = 127; break;
+                case "into": token.kind = 128; break;
+                case "let": token.kind = 129; break;
+                case "orderby": token.kind = 130; break;
+                case "ascending": token.kind = 131; break;
+                case "descending": token.kind = 132; break;
+                case "select": token.kind = 133; break;
+                case "group": token.kind = 134; break;
+                case "by": token.kind = 135; break;
                 default: break;
             }
         }
 
         Token NextToken()
         {
+            token = new Token();
+            token.pos = pos; token.col = col; token.line = line; token.charPos = charPos;
+            tlen = 0;
             while (ch == ' ' || ch >= 9 && ch <= 10 || ch == 13) NextCh();
-            if (ch == '/' && Comment0() || ch == '/' && Comment1()) return NextToken();
+            if (ch == '/' && Comment0() || ch == '/' && Comment1())
+            {
+                token.val = new String(tval, 0, tlen);
+                return token;
+            }
             int apx = 0;
             int recKind = noSym;
             int recEnd = pos;
-            t = new Token();
-            t.pos = pos; t.col = col; t.line = line; t.charPos = charPos;
             int state;
             state = start.ContainsKey(ch) ? start[ch] : 0;
-            tlen = 0; AddCh();
-
+            AddCh();
             switch (state)
             {
-                case -1: { t.kind = eofSym; break; } // NextCh already done
+                case -1: { token.kind = eofSym; break; } // NextCh already done
                 case 0:
                     {
                         if (recKind != noSym)
                         {
-                            tlen = recEnd - t.pos;
+                            tlen = recEnd - token.pos;
                             SetScannerBehindT();
                         }
-                        t.kind = recKind; break;
+                        token.kind = recKind; break;
                     } // NextCh already done
                 case 1:
                     recEnd = pos; recKind = 1;
                     if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z' || ch == 128 || ch >= 160 && ch <= 179 || ch == 181 || ch == 186 || ch >= 192 && ch <= 214 || ch >= 216 && ch <= 246 || ch >= 248 && ch <= 255) { AddCh(); goto case 1; }
                     else if (ch == 92) { AddCh(); goto case 2; }
-                    else { t.kind = 1; t.val = new String(tval, 0, tlen); CheckLiteral(); return t; }
+                    else { token.kind = 1; token.val = new String(tval, 0, tlen); CheckLiteral(); return token; }
                 case 2:
                     if (ch == 'u') { AddCh(); goto case 3; }
                     else if (ch == 'U') { AddCh(); goto case 7; }
@@ -652,7 +663,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     {
                         tlen -= apx;
                         SetScannerBehindT();
-                        t.kind = 2; break;
+                        token.kind = 2; break;
                     }
                 case 29:
                     if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'F' || ch >= 'a' && ch <= 'f') { AddCh(); goto case 30; }
@@ -664,15 +675,15 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     else if (ch == 'u') { AddCh(); goto case 177; }
                     else if (ch == 'L') { AddCh(); goto case 178; }
                     else if (ch == 'l') { AddCh(); goto case 179; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 31:
-                    { t.kind = 2; break; }
+                    { token.kind = 2; break; }
                 case 32:
                     recEnd = pos; recKind = 3;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 32; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
                     else if (ch == 'E' || ch == 'e') { AddCh(); goto case 33; }
-                    else { t.kind = 3; break; }
+                    else { token.kind = 3; break; }
                 case 33:
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 35; }
                     else if (ch == '+' || ch == '-') { AddCh(); goto case 34; }
@@ -684,13 +695,13 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     recEnd = pos; recKind = 3;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 35; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
-                    else { t.kind = 3; break; }
+                    else { token.kind = 3; break; }
                 case 36:
                     recEnd = pos; recKind = 3;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 36; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
                     else if (ch == 'E' || ch == 'e') { AddCh(); goto case 37; }
-                    else { t.kind = 3; break; }
+                    else { token.kind = 3; break; }
                 case 37:
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 39; }
                     else if (ch == '+' || ch == '-') { AddCh(); goto case 38; }
@@ -702,7 +713,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     recEnd = pos; recKind = 3;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 39; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
-                    else { t.kind = 3; break; }
+                    else { token.kind = 3; break; }
                 case 40:
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 42; }
                     else if (ch == '+' || ch == '-') { AddCh(); goto case 41; }
@@ -714,9 +725,9 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     recEnd = pos; recKind = 3;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 42; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
-                    else { t.kind = 3; break; }
+                    else { token.kind = 3; break; }
                 case 43:
-                    { t.kind = 3; break; }
+                    { token.kind = 3; break; }
                 case 44:
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '&' || ch >= '(' && ch <= '[' || ch >= ']' && ch <= 65535) { AddCh(); goto case 45; }
                     else if (ch == 92) { AddCh(); goto case 180; }
@@ -768,7 +779,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'F' || ch >= 'a' && ch <= 'f') { AddCh(); goto case 45; }
                     else { goto case 0; }
                 case 60:
-                    { t.kind = 4; break; }
+                    { token.kind = 4; break; }
                 case 61:
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= '!' || ch >= '#' && ch <= '[' || ch >= ']' && ch <= 65535) { AddCh(); goto case 61; }
                     else if (ch == '"') { AddCh(); goto case 77; }
@@ -824,63 +835,63 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     else if (ch == '"') { AddCh(); goto case 186; }
                     else { goto case 0; }
                 case 77:
-                    { t.kind = 5; break; }
+                    { token.kind = 5; break; }
                 case 78:
-                    { t.kind = 84; break; }
+                    { token.kind = 84; break; }
                 case 79:
-                    { t.kind = 85; break; }
+                    { token.kind = 85; break; }
                 case 80:
-                    { t.kind = 88; break; }
+                    { token.kind = 88; break; }
                 case 81:
-                    { t.kind = 89; break; }
+                    { token.kind = 89; break; }
                 case 82:
-                    { t.kind = 90; break; }
+                    { token.kind = 90; break; }
                 case 83:
-                    { t.kind = 92; break; }
+                    { token.kind = 92; break; }
                 case 84:
-                    { t.kind = 93; break; }
+                    { token.kind = 93; break; }
                 case 85:
-                    { t.kind = 95; break; }
+                    { token.kind = 95; break; }
                 case 86:
-                    { t.kind = 96; break; }
+                    { token.kind = 96; break; }
                 case 87:
-                    { t.kind = 97; break; }
+                    { token.kind = 97; break; }
                 case 88:
-                    { t.kind = 98; break; }
+                    { token.kind = 98; break; }
                 case 89:
-                    { t.kind = 99; break; }
+                    { token.kind = 99; break; }
                 case 90:
-                    { t.kind = 100; break; }
+                    { token.kind = 100; break; }
                 case 91:
-                    { t.kind = 104; break; }
+                    { token.kind = 104; break; }
                 case 92:
-                    { t.kind = 105; break; }
+                    { token.kind = 105; break; }
                 case 93:
-                    { t.kind = 106; break; }
+                    { token.kind = 106; break; }
                 case 94:
-                    { t.kind = 108; break; }
+                    { token.kind = 108; break; }
                 case 95:
-                    { t.kind = 109; break; }
+                    { token.kind = 109; break; }
                 case 96:
-                    { t.kind = 111; break; }
+                    { token.kind = 111; break; }
                 case 97:
-                    { t.kind = 113; break; }
+                    { token.kind = 113; break; }
                 case 98:
-                    { t.kind = 114; break; }
+                    { token.kind = 114; break; }
                 case 99:
-                    { t.kind = 115; break; }
+                    { token.kind = 115; break; }
                 case 100:
-                    { t.kind = 116; break; }
+                    { token.kind = 116; break; }
                 case 101:
-                    { t.kind = 117; break; }
+                    { token.kind = 117; break; }
                 case 102:
-                    { t.kind = 119; break; }
+                    { token.kind = 119; break; }
                 case 103:
-                    { t.kind = 120; break; }
+                    { token.kind = 120; break; }
                 case 104:
-                    { t.kind = 121; break; }
+                    { token.kind = 121; break; }
                 case 105:
-                    { t.kind = 122; break; }
+                    { token.kind = 122; break; }
                 case 106:
                     if (ch == 'e') { AddCh(); goto case 107; }
                     else { goto case 0; }
@@ -899,7 +910,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 111:
                     recEnd = pos; recKind = 143;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 111; }
-                    else { t.kind = 143; break; }
+                    else { token.kind = 143; break; }
                 case 112:
                     if (ch == 'n') { AddCh(); goto case 113; }
                     else { goto case 0; }
@@ -915,35 +926,35 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 116:
                     recEnd = pos; recKind = 144;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 116; }
-                    else { t.kind = 144; break; }
+                    else { token.kind = 144; break; }
                 case 117:
                     if (ch == 'f') { AddCh(); goto case 118; }
                     else { goto case 0; }
                 case 118:
                     recEnd = pos; recKind = 145;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 118; }
-                    else { t.kind = 145; break; }
+                    else { token.kind = 145; break; }
                 case 119:
                     if (ch == 'f') { AddCh(); goto case 120; }
                     else { goto case 0; }
                 case 120:
                     recEnd = pos; recKind = 146;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 120; }
-                    else { t.kind = 146; break; }
+                    else { token.kind = 146; break; }
                 case 121:
                     if (ch == 'e') { AddCh(); goto case 122; }
                     else { goto case 0; }
                 case 122:
                     recEnd = pos; recKind = 147;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 122; }
-                    else { t.kind = 147; break; }
+                    else { token.kind = 147; break; }
                 case 123:
                     if (ch == 'f') { AddCh(); goto case 124; }
                     else { goto case 0; }
                 case 124:
                     recEnd = pos; recKind = 148;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 124; }
-                    else { t.kind = 148; break; }
+                    else { token.kind = 148; break; }
                 case 125:
                     if (ch == 'i') { AddCh(); goto case 126; }
                     else { goto case 0; }
@@ -956,7 +967,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 128:
                     recEnd = pos; recKind = 149;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 128; }
-                    else { t.kind = 149; break; }
+                    else { token.kind = 149; break; }
                 case 129:
                     if (ch == 'r') { AddCh(); goto case 130; }
                     else { goto case 0; }
@@ -969,7 +980,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 132:
                     recEnd = pos; recKind = 150;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 132; }
-                    else { t.kind = 150; break; }
+                    else { token.kind = 150; break; }
                 case 133:
                     if (ch == 'a') { AddCh(); goto case 134; }
                     else { goto case 0; }
@@ -991,7 +1002,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 139:
                     recEnd = pos; recKind = 151;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 139; }
-                    else { t.kind = 151; break; }
+                    else { token.kind = 151; break; }
                 case 140:
                     if (ch == 'e') { AddCh(); goto case 141; }
                     else { goto case 0; }
@@ -1010,7 +1021,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 145:
                     recEnd = pos; recKind = 152;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 145; }
-                    else { t.kind = 152; break; }
+                    else { token.kind = 152; break; }
                 case 146:
                     if (ch == 'e') { AddCh(); goto case 147; }
                     else { goto case 0; }
@@ -1029,7 +1040,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 151:
                     recEnd = pos; recKind = 153;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 151; }
-                    else { t.kind = 153; break; }
+                    else { token.kind = 153; break; }
                 case 152:
                     if (ch == 'r') { AddCh(); goto case 153; }
                     else { goto case 0; }
@@ -1048,7 +1059,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 157:
                     recEnd = pos; recKind = 154;
                     if (ch <= 9 || ch >= 11 && ch <= 12 || ch >= 14 && ch <= 65535) { AddCh(); goto case 157; }
-                    else { t.kind = 154; break; }
+                    else { token.kind = 154; break; }
                 case 158:
                     recEnd = pos; recKind = 2;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 158; }
@@ -1059,7 +1070,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     else if (ch == '.') { apx++; AddCh(); goto case 187; }
                     else if (ch == 'E' || ch == 'e') { AddCh(); goto case 40; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 159:
                     if (ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z' || ch == 170 || ch == 181 || ch == 186 || ch >= 192 && ch <= 214 || ch >= 216 && ch <= 246 || ch >= 248 && ch <= 255) { AddCh(); goto case 1; }
                     else if (ch == 92) { AddCh(); goto case 15; }
@@ -1076,51 +1087,51 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     else if (ch == 'X' || ch == 'x') { AddCh(); goto case 29; }
                     else if (ch == 'E' || ch == 'e') { AddCh(); goto case 40; }
                     else if (ch == 'D' || ch == 'F' || ch == 'M' || ch == 'd' || ch == 'f' || ch == 'm') { AddCh(); goto case 43; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 161:
                     recEnd = pos; recKind = 91;
                     if (ch >= '0' && ch <= '9') { AddCh(); goto case 32; }
-                    else { t.kind = 91; break; }
+                    else { token.kind = 91; break; }
                 case 162:
                     recEnd = pos; recKind = 83;
                     if (ch == '=') { AddCh(); goto case 78; }
                     else if (ch == '&') { AddCh(); goto case 104; }
-                    else { t.kind = 83; break; }
+                    else { token.kind = 83; break; }
                 case 163:
                     recEnd = pos; recKind = 86;
                     if (ch == '>') { AddCh(); goto case 79; }
                     else if (ch == '=') { AddCh(); goto case 84; }
-                    else { t.kind = 86; break; }
+                    else { token.kind = 86; break; }
                 case 164:
                     recEnd = pos; recKind = 87;
                     if (ch == ':') { AddCh(); goto case 83; }
-                    else { t.kind = 87; break; }
+                    else { token.kind = 87; break; }
                 case 165:
                     recEnd = pos; recKind = 94;
                     if (ch == '=') { AddCh(); goto case 85; }
-                    else { t.kind = 94; break; }
+                    else { token.kind = 94; break; }
                 case 166:
                     recEnd = pos; recKind = 110;
                     if (ch == '+') { AddCh(); goto case 86; }
                     else if (ch == '=') { AddCh(); goto case 96; }
-                    else { t.kind = 110; break; }
+                    else { token.kind = 110; break; }
                 case 167:
                     recEnd = pos; recKind = 101;
                     if (ch == '<') { AddCh(); goto case 188; }
                     else if (ch == '=') { AddCh(); goto case 105; }
-                    else { t.kind = 101; break; }
+                    else { token.kind = 101; break; }
                 case 168:
                     recEnd = pos; recKind = 107;
                     if (ch == '=') { AddCh(); goto case 93; }
-                    else { t.kind = 107; break; }
+                    else { token.kind = 107; break; }
                 case 169:
                     recEnd = pos; recKind = 112;
                     if (ch == '?') { AddCh(); goto case 94; }
-                    else { t.kind = 112; break; }
+                    else { token.kind = 112; break; }
                 case 170:
                     recEnd = pos; recKind = 118;
                     if (ch == '=') { AddCh(); goto case 102; }
-                    else { t.kind = 118; break; }
+                    else { token.kind = 118; break; }
                 case 171:
                     if (ch == 9 || ch >= 11 && ch <= 12 || ch == ' ') { AddCh(); goto case 171; }
                     else if (ch == 'd') { AddCh(); goto case 106; }
@@ -1135,35 +1146,35 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 172:
                     recEnd = pos; recKind = 2;
                     if (ch == 'L' || ch == 'l') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 173:
                     recEnd = pos; recKind = 2;
                     if (ch == 'L' || ch == 'l') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 174:
                     recEnd = pos; recKind = 2;
                     if (ch == 'U' || ch == 'u') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 175:
                     recEnd = pos; recKind = 2;
                     if (ch == 'U' || ch == 'u') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 176:
                     recEnd = pos; recKind = 2;
                     if (ch == 'L' || ch == 'l') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 177:
                     recEnd = pos; recKind = 2;
                     if (ch == 'L' || ch == 'l') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 178:
                     recEnd = pos; recKind = 2;
                     if (ch == 'U' || ch == 'u') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 179:
                     recEnd = pos; recKind = 2;
                     if (ch == 'U' || ch == 'u') { AddCh(); goto case 31; }
-                    else { t.kind = 2; break; }
+                    else { token.kind = 2; break; }
                 case 180:
                     if (ch == '"' || ch == 39 || ch == '0' || ch == 92 || ch >= 'a' && ch <= 'b' || ch == 'f' || ch == 'n' || ch == 'r' || ch == 't' || ch == 'v') { AddCh(); goto case 45; }
                     else if (ch == 'x') { AddCh(); goto case 46; }
@@ -1198,7 +1209,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 186:
                     recEnd = pos; recKind = 5;
                     if (ch == '"') { AddCh(); goto case 76; }
-                    else { t.kind = 5; break; }
+                    else { token.kind = 5; break; }
                 case 187:
                     if (ch <= '/' || ch >= ':' && ch <= 65535) { apx++; AddCh(); goto case 28; }
                     else if (ch >= '0' && ch <= '9') { apx = 0; AddCh(); goto case 36; }
@@ -1206,7 +1217,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case 188:
                     recEnd = pos; recKind = 102;
                     if (ch == '=') { AddCh(); goto case 90; }
-                    else { t.kind = 102; break; }
+                    else { token.kind = 102; break; }
                 case 189:
                     if (ch == 'l') { AddCh(); goto case 190; }
                     else if (ch == 'n') { AddCh(); goto case 191; }
@@ -1224,43 +1235,43 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     else if (ch == 'r') { AddCh(); goto case 146; }
                     else { goto case 0; }
                 case 193:
-                    { t.kind = 136; break; }
+                    { token.kind = 136; break; }
                 case 194:
-                    { t.kind = 141; break; }
+                    { token.kind = 141; break; }
                 case 195:
                     recEnd = pos; recKind = 103;
                     if (ch == '-') { AddCh(); goto case 81; }
                     else if (ch == '=') { AddCh(); goto case 91; }
                     else if (ch == '>') { AddCh(); goto case 194; }
-                    else { t.kind = 103; break; }
+                    else { token.kind = 103; break; }
                 case 196:
                     recEnd = pos; recKind = 139;
                     if (ch == '=') { AddCh(); goto case 82; }
-                    else { t.kind = 139; break; }
+                    else { token.kind = 139; break; }
                 case 197:
                     recEnd = pos; recKind = 140;
                     if (ch == '=') { AddCh(); goto case 92; }
-                    else { t.kind = 140; break; }
+                    else { token.kind = 140; break; }
                 case 198:
                     recEnd = pos; recKind = 137;
                     if (ch == '=') { AddCh(); goto case 95; }
                     else if (ch == '|') { AddCh(); goto case 193; }
-                    else { t.kind = 137; break; }
+                    else { token.kind = 137; break; }
                 case 199:
                     recEnd = pos; recKind = 138;
                     if (ch == '=') { AddCh(); goto case 103; }
-                    else { t.kind = 138; break; }
+                    else { token.kind = 138; break; }
 
             }
-            t.val = new String(tval, 0, tlen);
-            return t;
+            token.val = new String(tval, 0, tlen);
+            return token;
         }
 
         private void SetScannerBehindT()
         {
-            buffer.Pos = t.pos;
+            buffer.Pos = token.pos;
             NextCh();
-            line = t.line; col = t.col; charPos = t.charPos;
+            line = token.line; col = token.col; charPos = token.charPos;
             for (int i = 0; i < tlen; i++) NextCh();
         }
 
