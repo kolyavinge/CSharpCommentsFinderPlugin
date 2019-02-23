@@ -18,7 +18,7 @@ namespace CSharpCommentsFinder.ViewModel
 
         public ICommand FindCommentsCommand { get { return new DelegateCommand(FindComments); } }
 
-        public MainViewModel(IProjects projects)
+        public MainViewModel(IProjectsCollection projects)
         {
             ProjectsViewModel = projects.Projects.Select(p => new ProjectViewModel(p)).ToList();
         }

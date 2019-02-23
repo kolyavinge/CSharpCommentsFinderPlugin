@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace CSharpCommentsFinder.Model
 {
-    public interface IProjects
+    public class CommentsFinder
     {
-        IEnumerable<IProject> Projects { get; }
+        public IEnumerable<IComment> GetComments(string fileContent)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
