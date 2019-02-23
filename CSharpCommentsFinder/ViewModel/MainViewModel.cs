@@ -1,27 +1,53 @@
 ﻿using CSharpCommentsFinder.Commands;
 using CSharpCommentsFinder.Model;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace CSharpCommentsFinder.ViewModel
 {
     public class MainViewModel : NotificationObject
     {
-        public IEnumerable<ProjectViewModel> ProjectsViewModel { get; set; }
+        private readonly IProjectsCollection _projects;
 
-        public ObservableCollection<CommentViewModel> CommentsViewModel { get; set; }
+        private IEnumerable<ProjectViewModel> _projectsViewModel;
+        public IEnumerable<ProjectViewModel> ProjectsViewModel
+        {
+            get { return _projectsViewModel; }
+            set
+            {
+                _projectsViewModel = value;
+                RaisePropertyChanged("ProjectsViewModel");
+            }
+        }
+
+        private ObservableCollection<CommentViewModel> _commentsViewModel;
+        public ObservableCollection<CommentViewModel> CommentsViewModel
+        {
+            get { return _commentsViewModel; }
+            set
+            {
+                _commentsViewModel = value;
+                RaisePropertyChanged("CommentsViewModel");
+            }
+        }
+
+        public ICommand ReloadProjectsCommand { get { return new DelegateCommand(ReloadProjects); } }
 
         public ICommand FindCommentsCommand { get { return new DelegateCommand(FindComments); } }
 
         public MainViewModel(IProjectsCollection projects)
         {
+            _projects = projects;
             CommentsViewModel = new ObservableCollection<CommentViewModel>();
-            ProjectsViewModel = projects.Projects.Select(p => new ProjectViewModel(p)).ToList();
+            ReloadProjects();
+        }
+
+        private void ReloadProjects()
+        {
+            CommentsViewModel.Clear();
+            ProjectsViewModel = _projects.Projects.Select(p => new ProjectViewModel(p)).ToList();
         }
 
         private void FindComments()

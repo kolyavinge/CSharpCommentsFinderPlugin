@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace CSharpCommentsFinder.CSharpGrammar
 {
@@ -13,12 +14,18 @@ namespace CSharpCommentsFinder.CSharpGrammar
         public int line;    // token line (starting at 1)
         public string val;  // token value
         public Token next;  // ML 2005-03-11 Tokens are kept in linked list
+
+        public override string ToString()
+        {
+            return String.Format("{0} ({1})", val, kind);
+        }
     }
 
     public enum TokenKinds
     {
         LineComment = 1000,
         MultilineComment = 1001,
+        XmlComment = 1002
     }
 
     //-----------------------------------------------------------------------------------
@@ -254,9 +261,9 @@ namespace CSharpCommentsFinder.CSharpGrammar
         const int maxT = 142;
         const int noSym = 142;
 
-        Buffer buffer; // scanner buffer
+        Buffer buffer;    // scanner buffer
 
-        Token token;          // current token
+        Token token;      // current token
         int ch;           // current input character
         int pos;          // byte position of current character
         int charPos;      // position by unicode characters starting with 0
@@ -335,6 +342,12 @@ namespace CSharpCommentsFinder.CSharpGrammar
         {
             buffer = new Buffer(s, true);
             Init();
+        }
+
+        public static Scanner FromText(string text)
+        {
+            var scanner = new Scanner(new MemoryStream(Encoding.UTF8.GetBytes(text)));
+            return scanner;
         }
 
         void Init()
@@ -1262,7 +1275,9 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     else { token.kind = 138; break; }
 
             }
+
             token.val = new String(tval, 0, tlen);
+
             return token;
         }
 

@@ -57,6 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CSharpGrammar\ScannerTests.cs" />
+    <Compile Include="Model\CommentsFinderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

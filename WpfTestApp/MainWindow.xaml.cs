@@ -13,7 +13,7 @@ namespace WpfTestApp
         {
             InitializeComponent();
 
-            ScannerTest();
+            //ScannerTest();
 
             var projectsCollection = MakeProjectsCollection();
             var vm = new MainViewModel(projectsCollection);

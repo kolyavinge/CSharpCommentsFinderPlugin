@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsshell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
-             Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
+             Background="Transparent"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -16,24 +16,24 @@
         </Grid.ColumnDefinitions>
         <!-- список проектов -->
         <Grid Grid.Column="0">
-            <ListBox ItemsSource="{Binding ProjectsViewModel}">
+            <Button Content="" Command="{Binding ReloadProjectsCommand}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="23" Height="23" />
+            <ListBox ItemsSource="{Binding ProjectsViewModel}" Margin="0,23,0,0" Background="Transparent">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Content="{Binding Item.Name}" IsChecked="{Binding IsSelected}" />
+                            <CheckBox Content="{Binding Item.Name}" IsChecked="{Binding IsSelected}" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="3" />
+        <GridSplitter Grid.Column="1" Background="Gray" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="3" />
         <!-- список найденных комментариев -->
         <Grid Grid.Column="2">
             <Button Content="Find comments" Command="{Binding FindCommentsCommand}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="23" />
-            <DataGrid ItemsSource="{Binding CommentsViewModel}" AutoGenerateColumns="False" Margin="0,23,0,0">
+            <DataGrid ItemsSource="{Binding CommentsViewModel}" AutoGenerateColumns="False" Margin="0,23,0,0" RowBackground="Transparent" Background="Transparent" HeadersVisibility="None">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Item.Text}" />
-                    <DataGridTextColumn />
+                    <DataGridTextColumn Binding="{Binding Item.Text}" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

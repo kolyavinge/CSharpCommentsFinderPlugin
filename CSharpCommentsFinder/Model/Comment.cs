@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSharpCommentsFinder.CSharpGrammar;
 
 namespace CSharpCommentsFinder.Model
 {
     public class Comment : IComment
     {
-        public string Text => throw new NotImplementedException();
+        private Token _commentToken;
 
-        public int StartPosition => throw new NotImplementedException();
+        public Comment(Token commentToken)
+        {
+            _commentToken = commentToken;
+        }
 
-        public int EndPosition => throw new NotImplementedException();
+        public string Text => _commentToken.val;
+
+        public int StartPosition => _commentToken.charPos;
+
+        public int EndPosition => _commentToken.charPos + _commentToken.pos;
     }
 }

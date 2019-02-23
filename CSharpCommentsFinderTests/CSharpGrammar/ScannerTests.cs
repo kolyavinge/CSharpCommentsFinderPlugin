@@ -69,9 +69,21 @@ comment
             Assert.AreEqual((int)TokenKinds.MultilineComment, tokens.Last().kind);
         }
 
+        [TestMethod]
+        public void Scanner_XmlComment()
+        {
+            var csCode = @"
+/// <summary>
+/// Summary
+/// </summary>";
+            var tokens = GetTokens(csCode);
+            Assert.AreEqual(1, tokens.Count);
+            Assert.AreEqual((int)TokenKinds.XmlComment, tokens.First().kind);
+        }
+
         private List<Token> GetTokens(string csCode)
         {
-            var scanner = new Scanner(new MemoryStream(Encoding.UTF8.GetBytes(csCode)));
+            var scanner = Scanner.FromText(csCode);
             return scanner.ScanAllTokens().ToList();
         }
     }
