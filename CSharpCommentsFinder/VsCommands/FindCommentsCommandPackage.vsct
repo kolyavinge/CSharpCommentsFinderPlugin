@@ -74,15 +74,15 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidFindCommentsCommandPackage" value="{a12ea584-015a-4e2c-ac3f-3907ad003b5d}" />
+    <GuidSymbol name="guidFindCommentsCommandPackage" value="{af1a4f0d-b682-43eb-ad18-9abc931976d4}" />
 
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidFindCommentsCommandPackageCmdSet" value="{1dcd6bd1-153f-45d5-82c6-46013bc39e4a}">
+    <GuidSymbol name="guidFindCommentsCommandPackageCmdSet" value="{14dc6b16-577b-4cb5-a4fd-b38ee50d964e}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="FindCommentsCommandId" value="0x0100" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidImages" value="{bbd215ab-45ed-43f9-9cc7-75a3e38c6da0}" >
+    <GuidSymbol name="guidImages" value="{29627d8a-3f6d-407b-84b5-707c3187eccd}" >
       <IDSymbol name="bmpPic1" value="1" />
       <IDSymbol name="bmpPic2" value="2" />
       <IDSymbol name="bmpPicSearch" value="3" />

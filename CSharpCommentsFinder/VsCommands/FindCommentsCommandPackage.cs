@@ -42,7 +42,7 @@ namespace CSharpCommentsFinder.VsCommands
         /// <summary>
         /// FindCommentsCommandPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "a12ea584-015a-4e2c-ac3f-3907ad003b5d";
+        public const string PackageGuidString = "af1a4f0d-b682-43eb-ad18-9abc931976d4";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FindCommentsCommandPackage"/> class.

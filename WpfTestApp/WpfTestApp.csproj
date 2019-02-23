@@ -110,7 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSharpCommentsFinder\CSharpCommentsFinder.csproj">
-      <Project>{6d462b28-5991-4bbb-9678-aec50e18e2c0}</Project>
+      <Project>{7306dd33-5016-4b39-a61c-13ab6606c463}</Project>
       <Name>CSharpCommentsFinder</Name>
     </ProjectReference>
   </ItemGroup>

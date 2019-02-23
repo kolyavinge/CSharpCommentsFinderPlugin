@@ -22,7 +22,7 @@ namespace CSharpCommentsFinder.VsCommands
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
-        public static readonly Guid CommandSet = new Guid("1dcd6bd1-153f-45d5-82c6-46013bc39e4a");
+        public static readonly Guid CommandSet = new Guid("14dc6b16-577b-4cb5-a4fd-b38ee50d964e");
 
         /// <summary>
         /// VS Package that provides this command, not null.
