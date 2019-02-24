@@ -22,8 +22,8 @@ namespace CSharpCommentsFinder.ViewModel
             }
         }
 
-        private ObservableCollection<CommentViewModel> _commentsViewModel;
-        public ObservableCollection<CommentViewModel> CommentsViewModel
+        private IEnumerable<CommentViewModel> _commentsViewModel;
+        public IEnumerable<CommentViewModel> CommentsViewModel
         {
             get { return _commentsViewModel; }
             set
@@ -42,19 +42,20 @@ namespace CSharpCommentsFinder.ViewModel
         public MainViewModel(IProjectsCollection projects)
         {
             _projects = projects;
-            CommentsViewModel = new ObservableCollection<CommentViewModel>();
+            CommentsViewModel = new List<CommentViewModel>();
             ReloadProjects();
         }
 
         private void ReloadProjects()
         {
-            CommentsViewModel.Clear();
+            CommentsViewModel = new List<CommentViewModel>();
             ProjectsViewModel = _projects.Projects.Select(p => new ProjectViewModel(p)).OrderBy(x => x.Item.Name).ToList();
         }
 
         private void FindComments()
         {
-            CommentsViewModel.Clear();
+            CommentsViewModel = new List<CommentViewModel>();
+            var newCommentsViewModel = new List<CommentViewModel>();
             var selectedProjects = ProjectsViewModel.Where(p => p.IsSelected).Select(p => p.Item).ToList();
             foreach (var selectedProject in selectedProjects)
             {
@@ -64,10 +65,11 @@ namespace CSharpCommentsFinder.ViewModel
                     var commentViewModels = comments.Select(c => new CommentViewModel(c)).ToList();
                     foreach (var commentViewModel in commentViewModels)
                     {
-                        CommentsViewModel.Add(commentViewModel);
+                        newCommentsViewModel.Add(commentViewModel);
                     }
                 }
             }
+            CommentsViewModel = newCommentsViewModel;
         }
 
         private void NavigateToComment(IComment comment)
