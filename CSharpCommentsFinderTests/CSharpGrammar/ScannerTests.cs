@@ -15,7 +15,7 @@ namespace CSharpCommentsFinder.CSharpGrammar.Tests
             var csCode = @"// simple comment";
             var tokens = GetTokens(csCode);
             Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(" simple comment", tokens.First().val);
+            Assert.AreEqual(" simple comment", tokens.First().value);
             Assert.AreEqual((int)TokenKinds.LineComment, tokens.First().kind);
         }
 
@@ -26,8 +26,8 @@ namespace CSharpCommentsFinder.CSharpGrammar.Tests
 // simple comment 2";
             var tokens = GetTokens(csCode);
             Assert.AreEqual(2, tokens.Count);
-            Assert.AreEqual(" simple comment 1", tokens.First().val);
-            Assert.AreEqual(" simple comment 2", tokens.Last().val);
+            Assert.AreEqual(" simple comment 1", tokens.First().value);
+            Assert.AreEqual(" simple comment 2", tokens.Last().value);
             Assert.AreEqual((int)TokenKinds.LineComment, tokens.First().kind);
             Assert.AreEqual((int)TokenKinds.LineComment, tokens.Last().kind);
         }
@@ -38,7 +38,7 @@ namespace CSharpCommentsFinder.CSharpGrammar.Tests
             var csCode = @"/* multiline comment 1 */";
             var tokens = GetTokens(csCode);
             Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual(" multiline comment 1 ", tokens.First().val);
+            Assert.AreEqual(" multiline comment 1 ", tokens.First().value);
             Assert.AreEqual((int)TokenKinds.MultilineComment, tokens.First().kind);
         }
 
@@ -52,7 +52,7 @@ comment
             Assert.AreEqual(1, tokens.Count);
             Assert.AreEqual(@" multiline
 comment
-1", tokens.First().val);
+1", tokens.First().value);
             Assert.AreEqual((int)TokenKinds.MultilineComment, tokens.First().kind);
         }
 
@@ -63,8 +63,8 @@ comment
 /* multiline comment 2 */";
             var tokens = GetTokens(csCode);
             Assert.AreEqual(2, tokens.Count);
-            Assert.AreEqual(" multiline comment 1 ", tokens.First().val);
-            Assert.AreEqual(" multiline comment 2 ", tokens.Last().val);
+            Assert.AreEqual(" multiline comment 1 ", tokens.First().value);
+            Assert.AreEqual(" multiline comment 2 ", tokens.Last().value);
             Assert.AreEqual((int)TokenKinds.MultilineComment, tokens.First().kind);
             Assert.AreEqual((int)TokenKinds.MultilineComment, tokens.Last().kind);
         }
@@ -77,8 +77,10 @@ comment
 /// Summary
 /// </summary>";
             var tokens = GetTokens(csCode);
-            Assert.AreEqual(1, tokens.Count);
-            Assert.AreEqual((int)TokenKinds.XmlComment, tokens.First().kind);
+            Assert.AreEqual(3, tokens.Count);
+            Assert.AreEqual((int)TokenKinds.XmlComment, tokens[0].kind);
+            Assert.AreEqual((int)TokenKinds.XmlComment, tokens[1].kind);
+            Assert.AreEqual((int)TokenKinds.XmlComment, tokens[2].kind);
         }
 
         private List<Token> GetTokens(string csCode)

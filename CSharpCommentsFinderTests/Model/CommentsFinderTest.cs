@@ -54,7 +54,7 @@ namespace CSharpCommentsFinderTests.Model
         [TestMethod]
         public void GetComments_Comment2()
         {
-            var text = @"// just, comment.";
+            var text = @"/// just, comment.";
             var comments = _commentsFinder.GetComments(text).ToList();
             Assert.AreEqual(0, comments.Count);
         }

@@ -1,17 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace CSharpCommentsFinder.Commands
 {
-    public class DelegateCommand : ICommand
+    public class ParametrizedCommand<T> : ICommand
     {
-        private Action _action;
+        private readonly Action<T> _func;
 
         public event EventHandler CanExecuteChanged;
 
-        public DelegateCommand(Action action)
+        public ParametrizedCommand(Action<T> func)
         {
-            _action = action;
+            _func = func;
         }
 
         public bool CanExecute(object parameter)
@@ -21,7 +25,7 @@ namespace CSharpCommentsFinder.Commands
 
         public void Execute(object parameter)
         {
-            _action();
+            _func((T)parameter);
         }
     }
 }

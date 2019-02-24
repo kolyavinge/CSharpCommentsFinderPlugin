@@ -12,12 +12,12 @@ namespace CSharpCommentsFinder.CSharpGrammar
         public int charPos; // token position in characters in the source text (starting at 0)
         public int col;     // token column (starting at 1)
         public int line;    // token line (starting at 1)
-        public string val;  // token value
+        public string value;  // token value
         public Token next;  // ML 2005-03-11 Tokens are kept in linked list
 
         public override string ToString()
         {
-            return String.Format("{0} ({1})", val, kind);
+            return String.Format("{0} ({1})", value, kind);
         }
     }
 
@@ -400,14 +400,15 @@ namespace CSharpCommentsFinder.CSharpGrammar
             }
         }
 
-        bool Comment0()
+        bool CommentLine()
         {
             int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
             NextCh();
             if (ch == '/')
             {
-                token.kind = (int)TokenKinds.LineComment;
                 NextCh();
+                if (ch == '/') token.kind = (int)TokenKinds.XmlComment;
+                else token.kind = (int)TokenKinds.LineComment;
                 for (; ; )
                 {
                     if (ch == 10)
@@ -425,10 +426,11 @@ namespace CSharpCommentsFinder.CSharpGrammar
             {
                 buffer.Pos = pos0; NextCh(); line = line0; col = col0; charPos = charPos0;
             }
+
             return false;
         }
 
-        bool Comment1()
+        bool CommentMuliLine()
         {
             int level = 1, pos0 = pos, line0 = line, col0 = col, charPos0 = charPos;
             NextCh();
@@ -456,12 +458,13 @@ namespace CSharpCommentsFinder.CSharpGrammar
             {
                 buffer.Pos = pos0; NextCh(); line = line0; col = col0; charPos = charPos0;
             }
+
             return false;
         }
 
         void CheckLiteral()
         {
-            switch (token.val)
+            switch (token.value)
             {
                 case "abstract": token.kind = 6; break;
                 case "as": token.kind = 7; break;
@@ -563,9 +566,18 @@ namespace CSharpCommentsFinder.CSharpGrammar
             token.pos = pos; token.col = col; token.line = line; token.charPos = charPos;
             tlen = 0;
             while (ch == ' ' || ch >= 9 && ch <= 10 || ch == 13) NextCh();
-            if (ch == '/' && Comment0() || ch == '/' && Comment1())
+            if (ch == '/' && CommentLine())
             {
-                token.val = new String(tval, 0, tlen);
+                token.value = new String(tval, 0, tlen);
+                //if (token.value[0] == '/')
+                //{
+                //    token.kind = (int)TokenKinds.XmlComment;
+                //}
+                return token;
+            }
+            else if (ch == '/' && CommentMuliLine())
+            {
+                token.value = new String(tval, 0, tlen);
                 return token;
             }
             int apx = 0;
@@ -590,7 +602,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                     recEnd = pos; recKind = 1;
                     if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z' || ch == 128 || ch >= 160 && ch <= 179 || ch == 181 || ch == 186 || ch >= 192 && ch <= 214 || ch >= 216 && ch <= 246 || ch >= 248 && ch <= 255) { AddCh(); goto case 1; }
                     else if (ch == 92) { AddCh(); goto case 2; }
-                    else { token.kind = 1; token.val = new String(tval, 0, tlen); CheckLiteral(); return token; }
+                    else { token.kind = 1; token.value = new String(tval, 0, tlen); CheckLiteral(); return token; }
                 case 2:
                     if (ch == 'u') { AddCh(); goto case 3; }
                     else if (ch == 'U') { AddCh(); goto case 7; }
@@ -1276,7 +1288,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
 
             }
 
-            token.val = new String(tval, 0, tlen);
+            token.value = new String(tval, 0, tlen);
 
             return token;
         }
@@ -1292,7 +1304,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
         public IEnumerable<Token> ScanAllTokens()
         {
             var token = Scan();
-            while (!String.IsNullOrWhiteSpace(token.val))
+            while (!String.IsNullOrWhiteSpace(token.value))
             {
                 yield return token;
                 token = Scan();

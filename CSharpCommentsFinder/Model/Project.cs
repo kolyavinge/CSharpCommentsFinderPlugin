@@ -1,10 +1,7 @@
-﻿using System;
+﻿using EnvDTE;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EnvDTE;
 
 namespace CSharpCommentsFinder.Model
 {
@@ -14,7 +11,7 @@ namespace CSharpCommentsFinder.Model
 
         public Project(EnvDTE.Project solutionProject)
         {
-            _solutionProject = solutionProject;
+            _solutionProject = solutionProject ?? throw new ArgumentNullException(nameof(solutionProject));
         }
 
         public string Name

@@ -24,14 +24,17 @@ namespace WpfTestApp
         private IProjectsCollection MakeProjectsCollection()
         {
             var project1File1Comment1 = new Mock<IComment>();
-            project1File1Comment1.SetupGet(x => x.Text).Returns("Text");
-            project1File1Comment1.SetupGet(x => x.StartPosition).Returns(2);
-            project1File1Comment1.SetupGet(x => x.EndPosition).Returns(10);
+            project1File1Comment1.SetupGet(x => x.Text).Returns("Text 1");
+            project1File1Comment1.SetupGet(x => x.LineNumber).Returns(2);
+
+            var project1File1Comment2 = new Mock<IComment>();
+            project1File1Comment2.SetupGet(x => x.Text).Returns("Text 2");
+            project1File1Comment2.SetupGet(x => x.LineNumber).Returns(2);
 
             var project1File1 = new Mock<IProjectFile>();
             project1File1.SetupGet(x => x.Name).Returns("File 1.cs");
             project1File1.SetupGet(x => x.FullPath).Returns(@"C:\Folder\File1.cs");
-            project1File1.Setup(x => x.GetComments()).Returns(new[] { project1File1Comment1.Object });
+            project1File1.Setup(x => x.GetComments()).Returns(new[] { project1File1Comment1.Object, project1File1Comment2.Object });
 
             var project1 = new Mock<IProject>();
             project1.SetupGet(x => x.Name).Returns("Project 1");

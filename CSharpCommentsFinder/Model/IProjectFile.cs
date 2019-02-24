@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CSharpCommentsFinder.Model
 {
@@ -13,5 +9,7 @@ namespace CSharpCommentsFinder.Model
         string FullPath { get; }
 
         IEnumerable<IComment> GetComments();
+
+        void NavigateTo(IComment comment);
     }
 }

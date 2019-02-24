@@ -33,9 +33,11 @@ namespace CSharpCommentsFinder.ViewModel
             }
         }
 
-        public ICommand ReloadProjectsCommand { get { return new DelegateCommand(ReloadProjects); } }
+        public ICommand ReloadProjectsCommand { get { return new ActionCommand(ReloadProjects); } }
 
-        public ICommand FindCommentsCommand { get { return new DelegateCommand(FindComments); } }
+        public ICommand FindCommentsCommand { get { return new ActionCommand(FindComments); } }
+
+        public ICommand NavigateToCommentCommand { get { return new ParametrizedCommand<IComment>(NavigateToComment); } }
 
         public MainViewModel(IProjectsCollection projects)
         {
@@ -47,7 +49,7 @@ namespace CSharpCommentsFinder.ViewModel
         private void ReloadProjects()
         {
             CommentsViewModel.Clear();
-            ProjectsViewModel = _projects.Projects.Select(p => new ProjectViewModel(p)).ToList();
+            ProjectsViewModel = _projects.Projects.Select(p => new ProjectViewModel(p)).OrderBy(x => x.Item.Name).ToList();
         }
 
         private void FindComments()
@@ -66,6 +68,11 @@ namespace CSharpCommentsFinder.ViewModel
                     }
                 }
             }
+        }
+
+        private void NavigateToComment(IComment comment)
+        {
+            comment.ProjectFile.NavigateTo(comment);
         }
     }
 }

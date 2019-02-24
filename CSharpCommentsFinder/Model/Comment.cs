@@ -13,13 +13,13 @@ namespace CSharpCommentsFinder.Model
 
         public Comment(Token commentToken)
         {
-            _commentToken = commentToken;
+            _commentToken = commentToken ?? throw new ArgumentNullException(nameof(commentToken));
         }
 
-        public string Text => _commentToken.val;
+        public string Text => _commentToken.value;
 
-        public int StartPosition => _commentToken.charPos;
+        public int LineNumber => _commentToken.line;
 
-        public int EndPosition => _commentToken.charPos + _commentToken.pos;
+        public IProjectFile ProjectFile { get; set; }
     }
 }

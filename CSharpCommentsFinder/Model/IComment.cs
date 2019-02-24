@@ -10,8 +10,8 @@ namespace CSharpCommentsFinder.Model
     {
         string Text { get; }
 
-        int StartPosition { get; }
+        int LineNumber { get; }
 
-        int EndPosition { get; }
+        IProjectFile ProjectFile { get; }
     }
 }

@@ -1,10 +1,8 @@
-﻿using System;
+﻿using EnvDTE;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EnvDTE;
 
 namespace CSharpCommentsFinder.Model
 {
@@ -14,7 +12,7 @@ namespace CSharpCommentsFinder.Model
 
         public ProjectFile(ProjectItem projectItem)
         {
-            _projectItem = projectItem;
+            _projectItem = projectItem ?? throw new ArgumentNullException(nameof(projectItem));
         }
 
         public string Name
@@ -39,9 +37,19 @@ namespace CSharpCommentsFinder.Model
         {
             var fileContent = File.ReadAllText(FullPath);
             var commentsFinder = new CommentsFinder();
-            var comments = commentsFinder.GetComments(fileContent);
+            var comments = commentsFinder.GetComments(fileContent).ToList();
+            comments.ForEach(c => c.ProjectFile = this);
 
             return comments;
+        }
+
+        public void NavigateTo(IComment comment)
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            var window = _projectItem.Open();
+            window.Activate();
+            var selection = (TextSelection)window.Document.Selection;
+            selection.MoveToLineAndOffset(comment.LineNumber, 1);
         }
     }
 }
