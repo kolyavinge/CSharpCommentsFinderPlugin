@@ -9,9 +9,9 @@ namespace CSharpCommentsFinder.Model
 {
     public class CommentsFinder
     {
-        public IEnumerable<Comment> GetComments(string text)
+        public IEnumerable<Comment> GetComments(string filePath)
         {
-            var scanner = Scanner.FromText(text);
+            var scanner = new Scanner(filePath);
             var allTokens = scanner.ScanAllTokens().ToList();
             var comments = allTokens.Where(t => t.kind == (int)TokenKinds.LineComment || t.kind == (int)TokenKinds.MultilineComment).ToList();
             var csCodeComments = comments.Where(IsCSharpCode).ToList();
@@ -19,7 +19,7 @@ namespace CSharpCommentsFinder.Model
             return csCodeComments.Select(c => new Comment(c));
         }
 
-        private HashSet<int> _textCommentTokenKinds = new HashSet<int> { 1, 2, 88, 91, 139 };
+        private HashSet<int> _textCommentTokenKinds = new HashSet<int> { 1, 2, 87, 88, 91, 103, 139, 142 };
 
         public bool IsCSharpCode(Token comment)
         {

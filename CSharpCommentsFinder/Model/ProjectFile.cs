@@ -35,9 +35,8 @@ namespace CSharpCommentsFinder.Model
 
         public IEnumerable<IComment> GetComments()
         {
-            var fileContent = File.ReadAllText(FullPath);
             var commentsFinder = new CommentsFinder();
-            var comments = commentsFinder.GetComments(fileContent).ToList();
+            var comments = commentsFinder.GetComments(FullPath).ToList();
             comments.ForEach(c => c.ProjectFile = this);
 
             return comments;

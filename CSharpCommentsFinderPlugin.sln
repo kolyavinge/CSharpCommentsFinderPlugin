@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCommentsFinderTests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpCommentsFinder", "CSharpCommentsFinder\CSharpCommentsFinder.csproj", "{E6C620A8-3B16-48B8-A5A8-45BE98237C3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigTestProject", "BigTestProject\BigTestProject.csproj", "{9711152F-9F38-4834-B1BA-DC89D9D66774}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{E6C620A8-3B16-48B8-A5A8-45BE98237C3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6C620A8-3B16-48B8-A5A8-45BE98237C3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6C620A8-3B16-48B8-A5A8-45BE98237C3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9711152F-9F38-4834-B1BA-DC89D9D66774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9711152F-9F38-4834-B1BA-DC89D9D66774}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9711152F-9F38-4834-B1BA-DC89D9D66774}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9711152F-9F38-4834-B1BA-DC89D9D66774}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

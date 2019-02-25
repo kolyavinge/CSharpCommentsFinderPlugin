@@ -33,6 +33,19 @@ namespace CSharpCommentsFinder.CSharpGrammar.Tests
         }
 
         [TestMethod]
+        public void Scanner_SimpleComment3()
+        {
+            var csCode = @"// комментарий 1
+// комментарий 2";
+            var tokens = GetTokens(csCode);
+            Assert.AreEqual(2, tokens.Count);
+            Assert.AreEqual(" комментарий 1", tokens.First().value);
+            Assert.AreEqual(" комментарий 2", tokens.Last().value);
+            Assert.AreEqual((int)TokenKinds.LineComment, tokens.First().kind);
+            Assert.AreEqual((int)TokenKinds.LineComment, tokens.Last().kind);
+        }
+
+        [TestMethod]
         public void Scanner_MultiLineComment1()
         {
             var csCode = @"/* multiline comment 1 */";

@@ -11,6 +11,7 @@ namespace CSharpCommentsFinder.ViewModel
     {
         public ProjectViewModel(IProject item) : base(item)
         {
+            IsSelected = true;
         }
     }
 }

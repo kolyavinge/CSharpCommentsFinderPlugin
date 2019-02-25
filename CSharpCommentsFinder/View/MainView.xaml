@@ -32,17 +32,6 @@
         <Grid Grid.Column="2">
             <Button Content="Find comments" Command="{Binding FindCommentsCommand}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="23" />
             <DataGrid ItemsSource="{Binding CommentsViewModel}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Margin="0,23,0,0" RowBackground="Transparent" Background="Transparent" HeadersVisibility="None">
-                <DataGrid.CellStyle>
-                    <Style TargetType="{x:Type DataGridCell}">
-                        <Style.Triggers>
-                            <Trigger Property="DataGridCell.IsSelected" Value="False">
-                                <Setter Property="BorderBrush" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.FileTabInactiveTextKey}}"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.CellStyle>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
@@ -51,7 +40,17 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Binding="{Binding Item.Text}" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" Width="*" />
+                    <DataGridTextColumn Binding="{Binding Item.Text}" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" Width="*">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="{x:Type DataGridCell}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.InactiveCaptionTextKey}}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

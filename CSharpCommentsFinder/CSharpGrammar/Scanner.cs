@@ -53,7 +53,6 @@ namespace CSharpCommentsFinder.CSharpGrammar
         public Buffer(Stream s, bool isUserStream)
         {
             stream = s; this.isUserStream = isUserStream;
-
             if (stream.CanSeek)
             {
                 fileLen = (int)stream.Length;
@@ -338,15 +337,16 @@ namespace CSharpCommentsFinder.CSharpGrammar
             }
         }
 
-        public Scanner(Stream s)
+        public Scanner(Stream s, bool asUTF8)
         {
             buffer = new Buffer(s, true);
+            if (asUTF8) buffer = new UTF8Buffer(buffer);
             Init();
         }
 
         public static Scanner FromText(string text)
         {
-            var scanner = new Scanner(new MemoryStream(Encoding.UTF8.GetBytes(text)));
+            var scanner = new Scanner(new MemoryStream(Encoding.UTF8.GetBytes(text)), true);
             return scanner;
         }
 
