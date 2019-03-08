@@ -10,7 +10,7 @@ namespace CSharpCommentsFinder.VsToolWindow
     {
         public ToolWindow() : base(null)
         {
-            Caption = "CSharp Comments Finder";
+            Caption = "C# Comments Finder";
             var mainViewFactory = new MainViewFactory();
             var mainView = mainViewFactory.Make();
             var toolWindowControl = new ToolWindowControl();

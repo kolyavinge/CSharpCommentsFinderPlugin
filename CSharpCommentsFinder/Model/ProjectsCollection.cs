@@ -33,12 +33,15 @@ namespace CSharpCommentsFinder.Model
         {
             Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             if (parentProjectItem.ProjectItems == null) return;
+            if (IsCSharpProject(parentProjectItem))
+            {
+                result.Add(new Project(parentProjectItem));
+            }
             for (int i = 1; i <= parentProjectItem.ProjectItems.Count; i++)
             {
                 var projectItem = parentProjectItem.ProjectItems.Item(i).Object as EnvDTE.Project;
                 if (projectItem == null) continue;
-                if (projectItem.CodeModel != null &&
-                    projectItem.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp)
+                if (IsCSharpProject(projectItem))
                 {
                     result.Add(new Project(projectItem));
                 }
@@ -47,6 +50,12 @@ namespace CSharpCommentsFinder.Model
                     FindAllProjects(projectItem, result);
                 }
             }
+        }
+
+        private bool IsCSharpProject(EnvDTE.Project project)
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            return project.CodeModel != null && project.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp;
         }
     }
 }

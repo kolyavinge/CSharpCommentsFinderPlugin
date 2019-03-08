@@ -8,6 +8,13 @@
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\Styles\ButtonStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="200" Width="300" />
@@ -16,7 +23,7 @@
         </Grid.ColumnDefinitions>
         <!-- список проектов -->
         <Grid Grid.Column="0">
-            <Button Content="" Command="{Binding ReloadProjectsCommand}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="23" Height="23" />
+            <Button Content="Reload projects" Command="{Binding ReloadProjectsCommand}" Style="{StaticResource LinkButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="8,3,0,0" />
             <ListBox ItemsSource="{Binding ProjectsViewModel}" Margin="0,23,0,0" Background="Transparent">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -30,18 +37,34 @@
         <GridSplitter Grid.Column="1" Background="Gray" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="3" />
         <!-- список найденных комментариев -->
         <Grid Grid.Column="2">
-            <Button Content="Find comments" Command="{Binding FindCommentsCommand}" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="23" />
+            <Button Content="Find comments" Command="{Binding FindCommentsCommand}" Style="{StaticResource LinkButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="8,3,0,0" />
             <DataGrid ItemsSource="{Binding CommentsViewModel}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Margin="0,23,0,0" RowBackground="Transparent" Background="Transparent" HeadersVisibility="None">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Width="23" Height="23" Command="{Binding DataContext.NavigateToCommentCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding Item}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Width="23" Height="23" Command="{Binding DataContext.NavigateToCommentCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding Item}">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Cursor" Value="Hand" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Button.Template>
+                                            <ControlTemplate>
+                                                <Image Width="16" Height="16" Source="..\Images\RightArrow.png" />
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                    <TextBlock Text="{Binding FormattedText}" Margin="8,3,0,0" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" />
+                                </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Binding="{Binding Item.Text}" Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}" Width="*">
-                        <DataGridTextColumn.CellStyle>
+                        <DataGridTemplateColumn.CellStyle>
                             <Style TargetType="{x:Type DataGridCell}">
                                 <Style.Triggers>
                                     <Trigger Property="IsSelected" Value="False">
@@ -49,8 +72,8 @@
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
-                        </DataGridTextColumn.CellStyle>
-                    </DataGridTextColumn>
+                        </DataGridTemplateColumn.CellStyle>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

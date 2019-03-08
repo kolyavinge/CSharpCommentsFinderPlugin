@@ -12,5 +12,15 @@ namespace CSharpCommentsFinder.ViewModel
         public CommentViewModel(IComment item) : base(item)
         {
         }
+
+        public string FormattedText
+        {
+            get
+            {
+                var text = Item.Text.TrimStart();
+                var carretIndex = text.IndexOfAny(new char[] { '\r', '\n' });
+                return carretIndex == -1 ? text : text.TrimStart().Substring(0, carretIndex);
+            }
+        }
     }
 }
