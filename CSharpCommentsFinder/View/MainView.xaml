@@ -39,6 +39,13 @@
         <Grid Grid.Column="2">
             <Button Content="Find comments" Command="{Binding FindCommentsCommand}" Style="{StaticResource LinkButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="8,3,0,0" />
             <DataGrid ItemsSource="{Binding CommentsViewModel}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Margin="0,23,0,0" RowBackground="Transparent" Background="Transparent" HeadersVisibility="None">
+                <DataGrid.Style>
+                    <Style TargetType="DataGrid">
+                        <Style.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="{DynamicResource {x:Static vsshell:VsColors.InactiveCaptionKey}}"/>
+                        </Style.Resources>
+                    </Style>
+                </DataGrid.Style>
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Width="*">
                         <DataGridTemplateColumn.CellTemplate>
@@ -64,15 +71,6 @@
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
-                        <DataGridTemplateColumn.CellStyle>
-                            <Style TargetType="{x:Type DataGridCell}">
-                                <Style.Triggers>
-                                    <Trigger Property="IsSelected" Value="False">
-                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.InactiveCaptionTextKey}}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </DataGridTemplateColumn.CellStyle>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>

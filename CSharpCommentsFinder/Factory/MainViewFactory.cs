@@ -1,7 +1,6 @@
 ﻿using CSharpCommentsFinder.Model;
 using CSharpCommentsFinder.View;
 using CSharpCommentsFinder.ViewModel;
-using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
 namespace CSharpCommentsFinder.Factory
@@ -11,9 +10,10 @@ namespace CSharpCommentsFinder.Factory
         public MainView Make()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            var dte = (DTE)Package.GetGlobalService(typeof(DTE));
+            var dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
             var projectsCollection = new ProjectsCollection(dte);
-            var vm = new MainViewModel(projectsCollection);
+            var solutionEvents = new SolutionEvents(dte);
+            var vm = new MainViewModel(projectsCollection, solutionEvents);
             var view = new MainView { DataContext = vm };
 
             return view;

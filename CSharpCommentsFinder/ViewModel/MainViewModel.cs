@@ -1,7 +1,7 @@
 ﻿using CSharpCommentsFinder.Commands;
 using CSharpCommentsFinder.Model;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 
@@ -10,6 +10,7 @@ namespace CSharpCommentsFinder.ViewModel
     public class MainViewModel : NotificationObject
     {
         private readonly IProjectsCollection _projects;
+        private readonly ISolutionEvents _solutionEvents;
 
         private IEnumerable<ProjectViewModel> _projectsViewModel;
         public IEnumerable<ProjectViewModel> ProjectsViewModel
@@ -39,11 +40,17 @@ namespace CSharpCommentsFinder.ViewModel
 
         public ICommand NavigateToCommentCommand { get { return new ParametrizedCommand<IComment>(NavigateToComment); } }
 
-        public MainViewModel(IProjectsCollection projects)
+        public MainViewModel(IProjectsCollection projects, ISolutionEvents solutionEvents)
         {
             _projects = projects;
+            _solutionEvents = solutionEvents;
             CommentsViewModel = new List<CommentViewModel>();
             ReloadProjects();
+            _solutionEvents.SolutionOpened += OnAnySolutionEvent;
+            _solutionEvents.SolutionClosing += OnAnySolutionEvent;
+            _solutionEvents.ProjectAdded += OnAnySolutionEvent;
+            _solutionEvents.ProjectRemoved += OnAnySolutionEvent;
+            _solutionEvents.ProjectRenamed += OnAnySolutionEvent;
         }
 
         private void ReloadProjects()
@@ -63,10 +70,7 @@ namespace CSharpCommentsFinder.ViewModel
                 {
                     var comments = projectFile.GetComments().ToList();
                     var commentViewModels = comments.Select(c => new CommentViewModel(c)).ToList();
-                    foreach (var commentViewModel in commentViewModels)
-                    {
-                        newCommentsViewModel.Add(commentViewModel);
-                    }
+                    newCommentsViewModel.AddRange(commentViewModels);
                 }
             }
             CommentsViewModel = newCommentsViewModel;
@@ -75,6 +79,12 @@ namespace CSharpCommentsFinder.ViewModel
         private void NavigateToComment(IComment comment)
         {
             comment.ProjectFile.NavigateTo(comment);
+        }
+
+        private void OnAnySolutionEvent(object sender, EventArgs e)
+        {
+            ProjectsViewModel = new List<ProjectViewModel>();
+            CommentsViewModel = new List<CommentViewModel>();
         }
     }
 }

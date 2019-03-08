@@ -16,7 +16,8 @@ namespace WpfTestApp
             //ScannerTest();
 
             var projectsCollection = MakeProjectsCollection();
-            var vm = new MainViewModel(projectsCollection);
+            var solutionEvents = MakeSolutionEvents();
+            var vm = new MainViewModel(projectsCollection, solutionEvents);
             var view = new MainView { DataContext = vm };
             mainGrid.Children.Add(view);
         }
@@ -44,6 +45,13 @@ namespace WpfTestApp
             projectsCollection.SetupGet(x => x.Projects).Returns(new[] { project1.Object });
 
             return projectsCollection.Object;
+        }
+
+        private ISolutionEvents MakeSolutionEvents()
+        {
+            var solutionEvents = new Mock<ISolutionEvents>();
+
+            return solutionEvents.Object;
         }
 
         private void ScannerTest()
