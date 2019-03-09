@@ -38,7 +38,7 @@
         <!-- список найденных комментариев -->
         <Grid Grid.Column="2">
             <Button Content="Find comments" Command="{Binding FindCommentsCommand}" Style="{StaticResource LinkButton}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="8,3,0,0" />
-            <DataGrid ItemsSource="{Binding CommentsViewModel}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Margin="0,23,0,0" RowBackground="Transparent" Background="Transparent" HeadersVisibility="None">
+            <DataGrid ItemsSource="{Binding CommentsViewModel}" SelectionMode="Single" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" Margin="0,23,0,0" RowBackground="Transparent" Background="Transparent" HorizontalGridLinesBrush="{DynamicResource {x:Static vsshell:VsBrushes.ActiveBorderKey}}"  HeadersVisibility="None">
                 <DataGrid.Style>
                     <Style TargetType="DataGrid">
                         <Style.Resources>

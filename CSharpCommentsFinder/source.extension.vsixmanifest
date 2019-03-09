@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CSharpCommentsFinder.a3a7978b-b0bc-41b9-af7f-b72346403132" Version="1.11" Language="en-US" Publisher="Kolya Vinge" />
+        <Identity Id="CSharpCommentsFinder.a3a7978b-b0bc-41b9-af7f-b72346403132" Version="1.12" Language="en-US" Publisher="Kolya Vinge" />
         <DisplayName>CSharpCommentsFinder</DisplayName>
-        <Description xml:space="preserve">Super plugin !P</Description>
+        <Description xml:space="preserve">Super plugin !</Description>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0, 16.0)" />

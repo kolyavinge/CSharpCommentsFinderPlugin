@@ -1,8 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace CSharpCommentsFinder.CSharpGrammar.Tests
 {
@@ -43,6 +41,8 @@ namespace CSharpCommentsFinder.CSharpGrammar.Tests
             Assert.AreEqual(" комментарий 2", tokens.Last().value);
             Assert.AreEqual((int)TokenKinds.LineComment, tokens.First().kind);
             Assert.AreEqual((int)TokenKinds.LineComment, tokens.Last().kind);
+            Assert.AreEqual(1, tokens.First().line);
+            Assert.AreEqual(2, tokens.Last().line);
         }
 
         [TestMethod]
@@ -67,6 +67,7 @@ comment
 comment
 1", tokens.First().value);
             Assert.AreEqual((int)TokenKinds.MultilineComment, tokens.First().kind);
+            Assert.AreEqual(1, tokens.First().line);
         }
 
         [TestMethod]
@@ -94,6 +95,42 @@ comment
             Assert.AreEqual((int)TokenKinds.XmlComment, tokens[0].kind);
             Assert.AreEqual((int)TokenKinds.XmlComment, tokens[1].kind);
             Assert.AreEqual((int)TokenKinds.XmlComment, tokens[2].kind);
+        }
+
+        [TestMethod]
+        public void Scanner_CommentLineNumber()
+        {
+            var csCode = @"internal class IndexBase : IComparable<IndexBase>
+{
+    internal short Index;
+    public int CompareTo(IndexBase other)
+    {
+        //return Index < other.Index ? -1 : Index > other.Index ? 1 : 0;
+        return Index - other.Index;
+    }
+}";
+            var tokens = GetTokens(csCode);
+            var commentToken = tokens.First(x => x.kind == (int)TokenKinds.LineComment);
+            Assert.AreEqual("return Index < other.Index ? -1 : Index > other.Index ? 1 : 0;", commentToken.value);
+            Assert.AreEqual(6, commentToken.line);
+        }
+
+        [TestMethod]
+        public void Scanner_CommentLineNumber2()
+        {
+            var csCode = @"internal class IndexBase : IComparable<IndexBase>
+{
+    internal short Index;
+    public int CompareTo(IndexBase other)
+    {
+        /*return Index < other.Index ? -1 : Index > other.Index ? 1 : 0;*/
+        return Index - other.Index;
+    }
+}";
+            var tokens = GetTokens(csCode);
+            var commentToken = tokens.First(x => x.kind == (int)TokenKinds.MultilineComment);
+            Assert.AreEqual("return Index < other.Index ? -1 : Index > other.Index ? 1 : 0;", commentToken.value);
+            Assert.AreEqual(6, commentToken.line);
         }
 
         private List<Token> GetTokens(string csCode)
