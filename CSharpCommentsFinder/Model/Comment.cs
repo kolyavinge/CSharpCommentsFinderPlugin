@@ -21,5 +21,7 @@ namespace CSharpCommentsFinder.Model
         public int LineNumber => _commentToken.line;
 
         public IProjectFile ProjectFile { get; set; }
+
+        public int Rating { get; set; }
     }
 }

@@ -13,5 +13,7 @@ namespace CSharpCommentsFinder.Model
         int LineNumber { get; }
 
         IProjectFile ProjectFile { get; }
+
+        int Rating { get; set; }
     }
 }

@@ -73,6 +73,7 @@ namespace CSharpCommentsFinder.ViewModel
                     newCommentsViewModel.AddRange(commentViewModels);
                 }
             }
+            newCommentsViewModel.Sort(new CommentViewModelComparer());
             CommentsViewModel = newCommentsViewModel;
         }
 

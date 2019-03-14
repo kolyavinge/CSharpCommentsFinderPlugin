@@ -23,4 +23,12 @@ namespace CSharpCommentsFinder.ViewModel
             }
         }
     }
+
+    public class CommentViewModelComparer : IComparer<CommentViewModel>
+    {
+        public int Compare(CommentViewModel x, CommentViewModel y)
+        {
+            return y.Item.Rating.CompareTo(x.Item.Rating);
+        }
+    }
 }
