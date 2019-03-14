@@ -8,6 +8,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
     public class Token
     {
         public int kind;    // token kind
+        public bool isLiteral;
         public int pos;     // token position in bytes in the source text (starting at 0)
         public int charPos; // token position in characters in the source text (starting at 0)
         public int col;     // token column (starting at 1)
@@ -466,6 +467,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
 
         void CheckLiteral()
         {
+            _token.isLiteral = true;
             switch (_token.value)
             {
                 case "abstract": _token.kind = 6; break;
@@ -558,7 +560,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 case "select": _token.kind = 133; break;
                 case "group": _token.kind = 134; break;
                 case "by": _token.kind = 135; break;
-                default: break;
+                default: _token.isLiteral = false; break;
             }
         }
 

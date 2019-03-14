@@ -22,11 +22,16 @@ namespace CSharpCommentsFinder.Model
 
         private int GetRating(Token comment)
         {
-            var tokens = GetTokens(comment);
+            int rating = 0;
+
+            var tokens = GetTokens(comment).ToList();
+            //var literalsCount = tokens.Count(t => t.isLiteral);
             var kinds = tokens.Select(x => x.kind).ToList();
             var availableKinds = kinds.Except(_textCommentTokenKinds).ToList();
 
-            return availableKinds.Count;
+            rating = availableKinds.Count;
+
+            return rating;
         }
 
         private IEnumerable<Token> GetTokens(Token comment)
