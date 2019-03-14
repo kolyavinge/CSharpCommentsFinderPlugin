@@ -1,7 +1,6 @@
 ﻿using EnvDTE;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace CSharpCommentsFinder.Model
@@ -13,25 +12,14 @@ namespace CSharpCommentsFinder.Model
         public ProjectFile(ProjectItem projectItem)
         {
             _projectItem = projectItem ?? throw new ArgumentNullException(nameof(projectItem));
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+            Name = _projectItem.Name;
+            FullPath = _projectItem.FileNames[0];
         }
 
-        public string Name
-        {
-            get
-            {
-                Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-                return _projectItem.Name;
-            }
-        }
+        public string Name { get; private set; }
 
-        public string FullPath
-        {
-            get
-            {
-                Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-                return _projectItem.FileNames[0];
-            }
-        }
+        public string FullPath { get; private set; }
 
         public IEnumerable<IComment> GetComments()
         {

@@ -3,6 +3,7 @@ using CSharpCommentsFinder.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace CSharpCommentsFinder.ViewModel
@@ -11,6 +12,17 @@ namespace CSharpCommentsFinder.ViewModel
     {
         private readonly IProjectsCollection _projects;
         private readonly ISolutionEvents _solutionEvents;
+
+        private Cursor _cursor;
+        public Cursor Cursor
+        {
+            get { return _cursor; }
+            set
+            {
+                _cursor = value;
+                RaisePropertyChanged("Cursor");
+            }
+        }
 
         private IEnumerable<ProjectViewModel> _projectsViewModel;
         public IEnumerable<ProjectViewModel> ProjectsViewModel
@@ -36,7 +48,7 @@ namespace CSharpCommentsFinder.ViewModel
 
         public ICommand ReloadProjectsCommand { get { return new ActionCommand(ReloadProjects); } }
 
-        public ICommand FindCommentsCommand { get { return new ActionCommand(FindComments); } }
+        public ICommand FindCommentsCommand { get { return new ActionCommand(FindCommentsAsync); } }
 
         public ICommand NavigateToCommentCommand { get { return new ParametrizedCommand<IComment>(NavigateToComment); } }
 
@@ -59,22 +71,34 @@ namespace CSharpCommentsFinder.ViewModel
             ProjectsViewModel = _projects.Projects.Select(p => new ProjectViewModel(p)).OrderBy(x => x.Item.Name).ToList();
         }
 
-        private void FindComments()
+        private async void FindCommentsAsync()
         {
+            Cursor = Cursors.Wait;
             CommentsViewModel = new List<CommentViewModel>();
-            var newCommentsViewModel = new List<CommentViewModel>();
             var selectedProjects = ProjectsViewModel.Where(p => p.IsSelected).Select(p => p.Item).ToList();
-            foreach (var selectedProject in selectedProjects)
-            {
-                foreach (var projectFile in selectedProject.AllFiles)
-                {
-                    var comments = projectFile.GetComments().ToList();
-                    var commentViewModels = comments.Select(c => new CommentViewModel(c)).ToList();
-                    newCommentsViewModel.AddRange(commentViewModels);
-                }
-            }
+            var allSelectedProjectsFiles = selectedProjects.SelectMany(p => p.AllFiles).ToList();
+            var newCommentsViewModel = await MakeCommentViewModelAsync(allSelectedProjectsFiles);
             newCommentsViewModel.Sort(new CommentViewModelComparer());
             CommentsViewModel = newCommentsViewModel;
+            Cursor = Cursors.Arrow;
+        }
+
+        private async Task<List<CommentViewModel>> MakeCommentViewModelAsync(IEnumerable<IProjectFile> projectFiles)
+        {
+            Func<List<CommentViewModel>> func = () =>
+            {
+                var result = new List<CommentViewModel>();
+                foreach (var projectFile in projectFiles)
+                {
+                    var comments = projectFile.GetComments().ToList();
+                    var commentViewModels = comments.Select(c => new CommentViewModel(c));
+                    result.AddRange(commentViewModels);
+                }
+
+                return result;
+            };
+
+            return await Task.Factory.StartNew(func);
         }
 
         private void NavigateToComment(IComment comment)

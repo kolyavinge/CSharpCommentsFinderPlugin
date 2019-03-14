@@ -15,7 +15,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Cursor="{Binding Cursor}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="200" Width="300" />
             <ColumnDefinition Width="Auto" />
