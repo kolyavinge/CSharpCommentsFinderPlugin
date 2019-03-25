@@ -363,7 +363,7 @@ namespace CSharpCommentsFinder.CSharpGrammar
                 NextCh(); int ch2 = _ch;
                 if (ch1 != 0xBB || ch2 != 0xBF)
                 {
-                    throw new Exception(String.Format("illegal byte order mark: EF {0,2:X} {1,2:X}", ch1, ch2));
+                    throw new Exception(String.Format("Illegal byte order mark: EF {0,2:X} {1,2:X}", ch1, ch2));
                 }
                 _buffer = new UTF8Buffer(_buffer); _col = 0; _charPos = -1;
                 NextCh();

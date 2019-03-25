@@ -1,7 +1,9 @@
 ﻿using CSharpCommentsFinder.Commands;
 using CSharpCommentsFinder.Model;
+using CSharpCommentsFinder.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -73,14 +75,24 @@ namespace CSharpCommentsFinder.ViewModel
 
         private async void FindCommentsAsync()
         {
-            Cursor = Cursors.Wait;
-            CommentsViewModel = new List<CommentViewModel>();
-            var selectedProjects = ProjectsViewModel.Where(p => p.IsSelected).Select(p => p.Item).ToList();
-            var allSelectedProjectsFiles = selectedProjects.SelectMany(p => p.AllFiles).ToList();
-            var newCommentsViewModel = await MakeCommentViewModelAsync(allSelectedProjectsFiles);
-            newCommentsViewModel.Sort(new CommentViewModelComparer());
-            CommentsViewModel = newCommentsViewModel;
-            Cursor = Cursors.Arrow;
+            try
+            {
+                Cursor = Cursors.Wait;
+                CommentsViewModel = new List<CommentViewModel>();
+                var selectedProjects = ProjectsViewModel.Where(p => p.IsSelected).Select(p => p.Item).ToList();
+                var allSelectedProjectsFiles = selectedProjects.SelectMany(p => p.AllFiles).ToList();
+                var newCommentsViewModel = await MakeCommentViewModelAsync(allSelectedProjectsFiles);
+                newCommentsViewModel.Sort(new CommentViewModelComparer());
+                CommentsViewModel = newCommentsViewModel;
+            }
+            catch (Exception e)
+            {
+                Logger.Info(e.ToString());
+            }
+            finally
+            {
+                Cursor = Cursors.Arrow;
+            }
         }
 
         private async Task<List<CommentViewModel>> MakeCommentViewModelAsync(IEnumerable<IProjectFile> projectFiles)
